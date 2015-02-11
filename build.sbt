@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
 
 workbenchSettings
 bootSnippet := "GitCrossStats().main())"
-//refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS)
+refreshBrowsers <<= refreshBrowsers.triggeredBy(fastOptJS in Compile)
 
 
 
