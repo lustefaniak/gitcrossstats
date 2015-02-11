@@ -18,29 +18,35 @@ object GitCrossStats {
   def main(args: Seq[String] = Seq()): Unit = {
 
     console.log("Starting GitCrossStats")
-    type Data = (Int, Float)
+    type Data = (Int, Double)
 
-    val data: js.Array[Data] = new js.Array[(Int, Float)]()
-    for (i <- 1 to 100) data.push((i, Random.nextFloat()))
+    val data = new js.Array[Data]()
+    for (i <- 1 to 100) data.push((i - 1, Random.nextInt(4)+1))
 
+    val ndx = crossfilter.crossfilter[Data](data.sortBy(_._1))
 
-    val ndx = crossfilter.crossfilter[Data](data)
+    val indexDimension = ndx.dimension({ (d: Data) => d._1})
+    val frequencyDimension = ndx.dimension({ (d: Data) => d._2})
 
-    val indexDimension = ndx.dimension({ (d: Data) => d._1 })
-
-    val speedSumGroup = indexDimension.group().reduceSum({
-      (pair:Data) => pair._2
+    val valueGroup = indexDimension.group().reduceSum({
+      (pair: Data) => pair._2
     })
+
+    val frequencyGroup = frequencyDimension.group()
+
 
     val chart = DC.barChart("#test");
     chart
       .width(768)
       .height(480)
-      .x(d3.d3.scale.linear().domain(js.Array(0,10)))
+      .x(d3.d3.scale.linear().domain(js.Array(-1, 11)))
       //.brushOn(false)
-      //.yAxisLabel("This is the Y Axis!")
       .dimension(indexDimension)
-      .group(speedSumGroup)
+      .group(valueGroup)
+
+    val piechart = DC.pieChart("#test2")
+    piechart.dimension(frequencyDimension).group(frequencyGroup)
+
 
     DC.renderAll()
 
