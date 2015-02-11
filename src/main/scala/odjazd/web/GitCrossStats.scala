@@ -1,4 +1,4 @@
-package odjazd.web
+package pl.relationsystems
 
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -10,7 +10,7 @@ object GitCrossStats {
 
   @JSExport
   def main(args: Seq[String]): Unit = {
-
+    dc.barChart("#somebar")
 
 
   }

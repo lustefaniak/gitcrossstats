@@ -1874,6 +1874,7 @@ trait Hull extends js.Object {
 
 }
 
-object D3Scope extends js.GlobalScope {
+package object d3 extends js.GlobalScope {
+  @JSName("d3")
   var d3: D3.Base = js.native
 }
