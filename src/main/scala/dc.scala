@@ -1,5 +1,7 @@
 package pl.relationsystems
 
+import pl.relationsystems.dc._
+
 import scala.scalajs.js
 import js.annotation._
 
@@ -133,35 +135,17 @@ trait IChartGroup extends js.Object {
 
 }
 
-package object dc extends js.Object {
-  @JSName("dc.events")
+@JSName("dc")
+object DC extends js.Object {
   var events: IEvents = js.native
-
-  @JSName("dc.filterAll")
   def filterAll(chartGroup: IChartGroup = ???): Unit = js.native
-
-  @JSName("dc.renderAll")
   def renderAll(chartGroup: IChartGroup = ???): Unit = js.native
-
-  @JSName("dc.redrawAll")
   def redrawAll(chartGroup: IChartGroup = ???): Unit = js.native
-
-  @JSName("dc.bubbleChart")
   def bubbleChart(cssSel: String): IBubblechart = js.native
-
-  @JSName("dc.pieChart")
   def pieChart(cssSel: String): IPiechart = js.native
-
-  @JSName("dc.barChart")
   def barChart(cssSel: String): IBarchart = js.native
-
-  @JSName("dc.lineChart")
   def lineChart(cssSel: String): ILinechart = js.native
-
-  @JSName("dc.dataTable")
   def dataTable(cssSel: String): IDatachart = js.native
-
-  @JSName("dc.rowChart")
   def rowChart(cssSel: String): IRowchart = js.native
 }
 
