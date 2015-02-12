@@ -125,37 +125,37 @@ object GitCrossStats {
 
 
     var authorsPieChart = dc.pieChart("#authorGraph")
-    authorsPieChart.dimension(byAuthorDimmension).group(byAuthorDimmension.group())
-    authorsPieChart.width(400)
-    authorsPieChart.height(400)
+    .dimension(byAuthorDimmension).group(byAuthorDimmension.group())
+    .width(400)
+    .height(400)
 
     var yearsPieChart = dc.pieChart("#yearGraph")
-    yearsPieChart.dimension(byYearDimmension).group(byYearDimmension.group())
+    .dimension(byYearDimmension).group(byYearDimmension.group())
 
     var monthChart = dc.barChart("#monthGraph")
-    monthChart.dimension(byMonthDimmension).group(byMonthDimmension.group())
-    monthChart.x(d3.scale.linear().domain(js.Array(1, 12)))
-    monthChart.elasticY(true)
-    monthChart.width(500)
-    monthChart.yAxisLabel(I18n.NumberOfCommits)
-    monthChart.xAxisLabel(I18n.Month)
+    .dimension(byMonthDimmension).group(byMonthDimmension.group())
+    .x(d3.scale.linear().domain(js.Array(1, 12)))
+    .elasticY(true)
+    .width(500)
+    .yAxisLabel(I18n.NumberOfCommits)
+    .xAxisLabel(I18n.Month)
 
     var hourChart = dc.barChart("#hourGraph")
-    hourChart.dimension(byHourDimension).group(byHourDimension.group())
-    hourChart.x(d3.scale.linear().domain(js.Array(0, 23)))
-    hourChart.elasticY(true)
-    hourChart.width(500)
-    hourChart.yAxisLabel(I18n.NumberOfCommits)
-    hourChart.xAxisLabel(I18n.HourOfDay)
+    .dimension(byHourDimension).group(byHourDimension.group())
+    .x(d3.scale.linear().domain(js.Array(0, 24)))
+    .elasticY(true)
+    .width(500)
+    .yAxisLabel(I18n.NumberOfCommits)
+    .xAxisLabel(I18n.HourOfDay)
 
 
     var dayOfMonthChart = dc.barChart("#dayOfMonthGraph")
-    dayOfMonthChart.dimension(byDayOfMonthDimension).group(byDayOfMonthDimension.group())
-    dayOfMonthChart.x(d3.scale.linear().domain(js.Array(1, 32)))
-    dayOfMonthChart.elasticY(true)
-    dayOfMonthChart.width(700)
-    dayOfMonthChart.yAxisLabel(I18n.NumberOfCommits)
-    dayOfMonthChart.xAxisLabel(I18n.DayOfMonth)
+    .dimension(byDayOfMonthDimension).group(byDayOfMonthDimension.group())
+    .x(d3.scale.linear().domain(js.Array(1, 32)))
+    .elasticY(true)
+    .width(700)
+    .yAxisLabel(I18n.NumberOfCommits)
+    .xAxisLabel(I18n.DayOfMonth)
 
     var dayOfWeekChart = dc.rowChart("#dayOfWeekGraph")
       .width(180)
@@ -169,16 +169,13 @@ object GitCrossStats {
       .elasticX(true).xAxis().ticks(4)
 
     var commitsTable = dc.dataTable("#commits")
-    commitsTable.dimension(byDateDimension)
-    commitsTable.sortBy({ (d: Any) => {
-      d.asInstanceOf[CommitEntry].date
-    }
-    })
-    commitsTable.group((a: Any) => {
+    .dimension(byDateDimension)
+    .sortBy((d: Any) => d.asInstanceOf[CommitEntry].date.getTime())
+    .group((a: Any) => {
       a.asInstanceOf[CommitEntry].date.toLocaleDateString()
     })
-    commitsTable.size(100)
-    commitsTable.columns(
+    .size(100)
+    .columns(
       js.Array(
         (rowinfo: Any) => rowinfo.asInstanceOf[CommitEntry].date.toLocaleTimeString(),
         (rowinfo: Any) => rowinfo.asInstanceOf[CommitEntry].commit,
