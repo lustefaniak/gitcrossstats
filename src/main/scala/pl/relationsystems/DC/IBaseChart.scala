@@ -27,4 +27,5 @@ trait IBaseChart[T] extends js.Object {
   var options: js.Function1[Object, Unit] = js.native
   var select: js.Function1[D3.Selection, D3.Selection] = js.native
   var selectAll: js.Function1[D3.Selection, D3.Selection] = js.native
+  var turnOnControls: IGetSet[Boolean, T] = js.native
 }

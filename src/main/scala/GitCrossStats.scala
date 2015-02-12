@@ -35,9 +35,7 @@ object I18n {
 
   val DayOfMonth: String = "Day of month"
 
-  val NumberOfCommits: String = "Number of commits"
   val dayNames = js.Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-
 
 }
 
@@ -128,48 +126,51 @@ object GitCrossStats {
     val byDateDimension = ndx.dimension({ (log: CommitExtended) => log.date.getTime()})
 
 
-    var authorsPieChart = dc.pieChart("#authorGraph")
-      .dimension(byAuthorDimmension).group(byAuthorDimmension.group())
-      .width(400)
-      .height(400)
-      .radius(190)
-      .innerRadius(120)
+    val totalWidthAvailable = 1100
 
-    var yearsPieChart = dc.pieChart("#yearGraph")
-      .dimension(byYearDimmension).group(byYearDimmension.group())
-      .width(180)
-      .height(180)
-      .radius(80)
-      .innerRadius(30)
 
-    var monthChart = dc.barChart("#monthGraph")
+    val monthChart = dc.barChart("#monthGraph")
+      .width(totalWidthAvailable).height(120)
       .dimension(byMonthDimmension).group(byMonthDimmension.group())
       .x(d3.scale.linear().domain(js.Array(1, 12)))
+      .y(d3.scale.log())
       .elasticY(true)
-      .width(500)
-      .yAxisLabel(I18n.NumberOfCommits)
       .xAxisLabel(I18n.Month)
-
-    var hourChart = dc.barChart("#hourGraph")
-      .dimension(byHourDimension).group(byHourDimension.group())
-      .x(d3.scale.linear().domain(js.Array(0, 24)))
-      .elasticY(true)
-      .width(500)
-      .yAxisLabel(I18n.NumberOfCommits)
-      .xAxisLabel(I18n.HourOfDay)
+      .turnOnControls(true)
 
 
-    var dayOfMonthChart = dc.barChart("#dayOfMonthGraph")
+    monthChart.xAxis().ticks(10)
+
+
+    val dayOfMonthChart = dc.barChart("#dayOfMonthGraph")
+      .width(totalWidthAvailable).height(120)
       .dimension(byDayOfMonthDimension).group(byDayOfMonthDimension.group())
       .x(d3.scale.linear().domain(js.Array(1, 32)))
       .elasticY(true)
-      .width(700)
-      .yAxisLabel(I18n.NumberOfCommits)
+      .y(d3.scale.log())
       .xAxisLabel(I18n.DayOfMonth)
 
-    var dayOfWeekChart = dc.rowChart("#dayOfWeekGraph")
-      .width(180)
-      .height(180)
+    var hourChart = dc.barChart("#hourGraph")
+      .width(totalWidthAvailable).height(120)
+      .dimension(byHourDimension).group(byHourDimension.group())
+      .x(d3.scale.linear().domain(js.Array(0, 24)))
+      .elasticY(true)
+      .xAxisLabel(I18n.HourOfDay)
+
+
+    val authorsSize = totalWidthAvailable * 2 / 3
+    val radius = (authorsSize / 2) * 0.95
+
+    val authorsPieChart = dc.pieChart("#authorGraph")
+      .width(authorsSize).height(authorsSize)
+      .dimension(byAuthorDimmension).group(byAuthorDimmension.group())
+      .radius(radius)
+      .innerRadius(radius * 0.8)
+
+
+    val dayOfWeekChart = dc.rowChart("#dayOfWeekGraph")
+      .width(totalWidthAvailable - authorsSize)
+      .height(160)
       .margins(js.Dynamic.literal(top = 20, left = 10, right = 10, bottom = 20).asInstanceOf[IMarginObj])
       .dimension(byDayOfWeekDimension)
       .group(byDayOfWeekDimension.group())
@@ -178,10 +179,17 @@ object GitCrossStats {
     })
       .elasticX(true).xAxis().ticks(4)
 
-    var commitsTable = dc.dataTable("#commits")
+    val yearsSize = totalWidthAvailable - authorsSize
+    val yearsPieChart = dc.pieChart("#yearGraph")
+      .width(yearsSize).height(yearsSize)
+      .dimension(byYearDimmension).group(byYearDimmension.group())
+      .radius(yearsSize / 2 * 0.95)
+      .innerRadius(yearsSize / 2 * 0.95 * 0.2)
+
+
+    val commitsTable = dc.dataTable("#commits")
       .dimension(byDateDimension)
-      .sortBy((d: Any) => d.asInstanceOf[CommitExtended].date.getTime())
-      .group((a: Any) => a.asInstanceOf[CommitExtended].date.toLocaleDateString())
+      .group((a: Any) => "<b>" + a.asInstanceOf[CommitExtended].date.toLocaleDateString() + "</b>")
       .size(100)
       .columns(
         js.Array(
