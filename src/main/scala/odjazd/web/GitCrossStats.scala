@@ -34,7 +34,7 @@ object GitCrossStats {
   var commitInformation = js.Dictionary[js.Array[GitChangeInformation]]()
 
   var processedGitLog: js.Array[GitLogForDisplay] = _
-  
+
   @JSExport
   def main(args: Seq[String] = Seq()): Unit = {
     console.log("Starting GitCrossStats")
@@ -138,20 +138,23 @@ object GitCrossStats {
 
     var commitsTable = dc.dataTable("#commits")
     commitsTable.dimension(byDateDimension)
-    commitsTable.group((a: Any) => "List of commits")
+    commitsTable.sortBy({ (d: Any) => {
+      d.asInstanceOf[GitLogForDisplay].date
+    }
+    })
+    commitsTable.group((a: Any) => {
+      a.asInstanceOf[GitLogForDisplay].date.toLocaleDateString()
+    })
     commitsTable.size(100)
     commitsTable.columns(
       js.Array(
         (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].commit,
         (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].author,
-        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].date.toUTCString()
+        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].date.toLocaleTimeString()
       )
     )
-    commitsTable.sortBy({ (d: Any) => {
-      d.asInstanceOf[GitLogForDisplay].date
-    }
-    })
-    //commitsTable.order(d3.ascending _)
+
+    commitsTable.order(d3.ascending _)
 
     dc.renderAll()
 
