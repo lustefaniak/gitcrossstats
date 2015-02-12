@@ -120,7 +120,7 @@ object GitCrossStats {
     val byCommitDimmension = ndx.dimension({ (log: CommitExtended) => log.sha})
     val byYearDimmension = ndx.dimension({ (log: CommitExtended) => log.year})
     val byMonthDimmension = ndx.dimension({ (log: CommitExtended) => log.month})
-    val byAuthorDimmension = ndx.dimension({ (log: CommitExtended) => log.author})
+    val byAuthorDimmension = ndx.dimension({ (log: CommitExtended) => log.simplifiedAuthor})
     val byDayOfMonthDimension = ndx.dimension({ (log: CommitExtended) => log.dayOfMonth})
 
     val byDayOfWeekDimension = ndx.dimension({ (log: CommitExtended) => s"${log.dayOfWeek}.${I18n.dayNames(log.dayOfWeek)}"})
