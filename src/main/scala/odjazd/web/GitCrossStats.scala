@@ -116,6 +116,8 @@ object GitCrossStats {
 
     var authorsPieChart = dc.pieChart("#authorGraph")
     authorsPieChart.dimension(byAuthorDimmension).group(byAuthorDimmension.group())
+    authorsPieChart.width(400)
+    authorsPieChart.height(400)
 
     var yearsPieChart = dc.pieChart("#yearGraph")
     yearsPieChart.dimension(byYearDimmension).group(byYearDimmension.group())
@@ -124,11 +126,13 @@ object GitCrossStats {
     monthChart.dimension(byMonthDimmension).group(byMonthDimmension.group())
     monthChart.x(d3.scale.linear().domain(js.Array(1, 12)))
     monthChart.elasticY(true)
+    monthChart.width(500)
 
     var dayOfMonthChart = dc.barChart("#dayOfMonthGraph")
     dayOfMonthChart.dimension(byDayOfMonthDimension).group(byDayOfMonthDimension.group())
     dayOfMonthChart.x(d3.scale.linear().domain(js.Array(1, 32)))
     dayOfMonthChart.elasticY(true)
+    dayOfMonthChart.width(700)
 
     var dayOfWeekChart = dc.pieChart("#dayOfWeekGraph")
     dayOfWeekChart.dimension(byDayOfWeekDimension).group(byDayOfWeekDimension.group())
@@ -148,9 +152,9 @@ object GitCrossStats {
     commitsTable.size(100)
     commitsTable.columns(
       js.Array(
+        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].date.toLocaleTimeString(),
         (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].commit,
-        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].author,
-        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].date.toLocaleTimeString()
+        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].author
       )
     )
 

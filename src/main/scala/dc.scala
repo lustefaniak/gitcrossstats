@@ -110,7 +110,7 @@ trait IDatachart extends IBaseChart[IDatachart] with IAbstractStackableChart[IDa
   var size: IGetSet[Double, IDatachart] = js.native
   var columns: IGetSet[js.Array[js.Function1[js.Any, String]], IDatachart] = js.native
   var sortBy: IGetSet[js.Function1[js.Any, js.Any], IDatachart] = js.native
-  var order: IGetSet[js.Function2[Double, Double, Double], IDatachart] = js.native
+  var order: IGetSet[js.Function2[scala.Any, scala.Any, scala.Any], IDatachart] = js.native
 }
 
 trait IRowchart extends IBaseChart[IRowchart] with IAbstractColorChart[IRowchart] with IAbstractStackableChart[IRowchart] with IAbstractCoordinateGridChart[IRowchart] with IMarginable[IRowchart] with IListener[IRowchart] {
