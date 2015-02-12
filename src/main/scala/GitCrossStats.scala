@@ -128,9 +128,15 @@ object GitCrossStats {
     .dimension(byAuthorDimmension).group(byAuthorDimmension.group())
     .width(400)
     .height(400)
+    .radius(190)
+    .innerRadius(120)
 
     var yearsPieChart = dc.pieChart("#yearGraph")
     .dimension(byYearDimmension).group(byYearDimmension.group())
+      .width(180)
+      .height(180)
+      .radius(80)
+      .innerRadius(30)
 
     var monthChart = dc.barChart("#monthGraph")
     .dimension(byMonthDimmension).group(byMonthDimmension.group())
