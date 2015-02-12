@@ -34,8 +34,7 @@ object GitCrossStats {
   var commitInformation = js.Dictionary[js.Array[GitChangeInformation]]()
 
   var processedGitLog: js.Array[GitLogForDisplay] = _
-
-
+  
   @JSExport
   def main(args: Seq[String] = Seq()): Unit = {
     console.log("Starting GitCrossStats")
@@ -69,7 +68,6 @@ object GitCrossStats {
 
     processedGitLog = gitLog.map {
       entry =>
-        console.log(entry)
         val insertions = 0
         val deletions = 0
         val changedPaths = 0
@@ -79,7 +77,7 @@ object GitCrossStats {
         val year = date.getFullYear()
         val month = date.getUTCMonth() + 1
         val dayOfMonth = date.getDate() + 1
-        val dayOfWeek = ((date.getUTCDay() + 6) % 7) + 1
+        val dayOfWeek = date.getUTCDay()
 
         val result = new GitLogForDisplay(entry.commit, author, date, year, month, dayOfMonth, dayOfWeek, insertions, deletions, changedPaths)
         result
@@ -111,7 +109,8 @@ object GitCrossStats {
     val byMonthDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.month})
     val byAuthorDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.author})
     val byDayOfMonthDimension = ndx.dimension({ (log: GitLogForDisplay) => log.dayOfMonth})
-    val byDayOfWeekDimension = ndx.dimension({ (log: GitLogForDisplay) => log.dayOfWeek})
+    val dayNames = js.Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+    val byDayOfWeekDimension = ndx.dimension({ (log: GitLogForDisplay) => s"${log.dayOfWeek}.${dayNames(log.dayOfWeek)}"})
     val byDateDimension = ndx.dimension({ (log: GitLogForDisplay) => log.date.getTime()})
 
 
@@ -133,6 +132,9 @@ object GitCrossStats {
 
     var dayOfWeekChart = dc.pieChart("#dayOfWeekGraph")
     dayOfWeekChart.dimension(byDayOfWeekDimension).group(byDayOfWeekDimension.group())
+    dayOfWeekChart.label((l: Any) => {
+      l.asInstanceOf[js.Dynamic].data.key.asInstanceOf[String].drop(2)
+    })
 
     var commitsTable = dc.dataTable("#commits")
     commitsTable.dimension(byDateDimension)
@@ -145,8 +147,11 @@ object GitCrossStats {
         (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].date.toUTCString()
       )
     )
-    commitsTable.sortBy({ (d: Any) => println(d); d.asInstanceOf[GitLogForDisplay].date.getTime()})
-    commitsTable.order(d3.ascending _)
+    commitsTable.sortBy({ (d: Any) => {
+      d.asInstanceOf[GitLogForDisplay].date
+    }
+    })
+    //commitsTable.order(d3.ascending _)
 
     dc.renderAll()
 
