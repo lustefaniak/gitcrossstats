@@ -23,7 +23,7 @@ trait GitChangeInformation {
   val path: String
 }
 
-case class GitLogForDisplay(commit: String, author: String, date: js.Date, year: Int, month: Int, insertions: Int, deletions: Int, changedPaths: Int)
+case class GitLogForDisplay(commit: String, author: String, date: js.Date, year: Int, month: Int, dayOfMonth:Int, insertions: Int, deletions: Int, changedPaths: Int)
 
 @JSExport("GitCrossStats")
 object GitCrossStats {
@@ -77,8 +77,9 @@ object GitCrossStats {
 
         val year = date.getFullYear()
         val month = date.getUTCMonth() + 1
+        val dayOfMonth = date.getDate() + 1
 
-        val result = new GitLogForDisplay(entry.commit, author, date, year, month, insertions, deletions, changedPaths)
+        val result = new GitLogForDisplay(entry.commit, author, date, year, month, dayOfMonth, insertions, deletions, changedPaths)
         result
     }
 
@@ -107,6 +108,7 @@ object GitCrossStats {
     val byYearDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.year})
     val byMonthDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.month})
     val byAuthorDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.author})
+    val byDayOfMonthDimension = ndx.dimension({ (log: GitLogForDisplay) => log.dayOfMonth})
     val byDateDimension = ndx.dimension({ (log: GitLogForDisplay) => log.date.getTime()})
 
 
@@ -120,6 +122,12 @@ object GitCrossStats {
     monthChart.dimension(byMonthDimmension).group(byMonthDimmension.group())
     monthChart.x(d3.scale.linear().domain(js.Array(1, 12)))
     monthChart.elasticY(true)
+
+    var dayOfMonthChart = dc.barChart("#dayOfMonthGraph")
+    dayOfMonthChart.dimension(byDayOfMonthDimension).group(byDayOfMonthDimension.group())
+    dayOfMonthChart.x(d3.scale.linear().domain(js.Array(1, 31)))
+    dayOfMonthChart.elasticY(true)
+
 
     var commitsTable = dc.dataTable("#commits")
     commitsTable.dimension(byDateDimension)
