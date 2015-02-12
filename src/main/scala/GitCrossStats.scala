@@ -181,15 +181,14 @@ object GitCrossStats {
     var commitsTable = dc.dataTable("#commits")
       .dimension(byDateDimension)
       .sortBy((d: Any) => d.asInstanceOf[CommitExtended].date.getTime())
-      .group((a: Any) => {
-      a.asInstanceOf[CommitExtended].date.toLocaleDateString()
-    })
+      .group((a: Any) => a.asInstanceOf[CommitExtended].date.toLocaleDateString())
       .size(100)
       .columns(
         js.Array(
           (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].date.toLocaleTimeString(),
-          (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].sha,
-          (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].simplifiedAuthor
+          (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].sha.take(8),
+          (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].simplifiedAuthor,
+          (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].message
         )
       )
 
