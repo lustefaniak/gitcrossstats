@@ -41,8 +41,15 @@ object I18n {
 
 }
 
-
-case class CommitEntry(commit: String, author: String, date: js.Date, year: Int, month: Int, dayOfMonth: Int, dayOfWeek: Int, hour: Int)
+trait CommitExtended extends Commit {
+  var simplifiedAuthor: String = js.native
+  var date: js.Date = js.native
+  var year: Int = js.native
+  var month: Int = js.native
+  var dayOfMonth: Int = js.native
+  var dayOfWeek: Int = js.native
+  var hour: Int = js.native
+}
 
 
 @JSExport("GitCrossStats")
@@ -50,7 +57,7 @@ object GitCrossStats {
 
   var gitLog = js.Array[Commit]()
 
-  var processedGitLog: js.Array[CommitEntry] = _
+  var processedGitLog: js.Array[CommitExtended] = _
 
 
   @JSExport
@@ -60,9 +67,6 @@ object GitCrossStats {
     d3.json(baseUrl, { (a: js.Any, b: js.Any) => {
       console.log("commits loaded")
       gitLog = b.asInstanceOf[js.Array[Commit]]
-
-      console.log(b)
-
       checkIfDataComplete
     }
     })
@@ -80,21 +84,21 @@ object GitCrossStats {
 
   def preprocessData(): Unit = {
 
-    processedGitLog = gitLog.map {
+    gitLog.foreach {
       entry =>
         val author = cleanupAuthor(entry.author)
+        val extended = entry.asInstanceOf[CommitExtended]
+        extended.simplifiedAuthor = author
         val date = new Date(entry.author.date)
-
-        val year = date.getFullYear()
-        val month = date.getUTCMonth() + 1
-        val dayOfMonth = date.getDate() + 1
-        val dayOfWeek = date.getUTCDay()
-
-        val hour = date.getUTCHours() + 1
-
-        val result = new CommitEntry(entry.sha, author, date, year, month, dayOfMonth, dayOfWeek, hour)
-        result
+        extended.date = date
+        extended.year = date.getFullYear()
+        extended.month = date.getUTCMonth() + 1
+        extended.dayOfMonth = date.getDate() + 1
+        extended.dayOfWeek = date.getUTCDay()
+        extended.hour = date.getUTCHours() + 1
     }
+
+    processedGitLog = gitLog.asInstanceOf[js.Array[CommitExtended]]
 
     //FIXME: do it async, as it takes already very long time
 
@@ -113,55 +117,55 @@ object GitCrossStats {
     val ndx = crossfilter(processedGitLog)
     val all = ndx.groupAll()
 
-    val byCommitDimmension = ndx.dimension({ (log: CommitEntry) => log.commit})
-    val byYearDimmension = ndx.dimension({ (log: CommitEntry) => log.year})
-    val byMonthDimmension = ndx.dimension({ (log: CommitEntry) => log.month})
-    val byAuthorDimmension = ndx.dimension({ (log: CommitEntry) => log.author})
-    val byDayOfMonthDimension = ndx.dimension({ (log: CommitEntry) => log.dayOfMonth})
+    val byCommitDimmension = ndx.dimension({ (log: CommitExtended) => log.sha})
+    val byYearDimmension = ndx.dimension({ (log: CommitExtended) => log.year})
+    val byMonthDimmension = ndx.dimension({ (log: CommitExtended) => log.month})
+    val byAuthorDimmension = ndx.dimension({ (log: CommitExtended) => log.author})
+    val byDayOfMonthDimension = ndx.dimension({ (log: CommitExtended) => log.dayOfMonth})
 
-    val byDayOfWeekDimension = ndx.dimension({ (log: CommitEntry) => s"${log.dayOfWeek}.${I18n.dayNames(log.dayOfWeek)}"})
-    val byHourDimension = ndx.dimension({ (log: CommitEntry) => log.date.getUTCHours() + 1})
-    val byDateDimension = ndx.dimension({ (log: CommitEntry) => log.date.getTime()})
+    val byDayOfWeekDimension = ndx.dimension({ (log: CommitExtended) => s"${log.dayOfWeek}.${I18n.dayNames(log.dayOfWeek)}"})
+    val byHourDimension = ndx.dimension({ (log: CommitExtended) => log.date.getUTCHours() + 1})
+    val byDateDimension = ndx.dimension({ (log: CommitExtended) => log.date.getTime()})
 
 
     var authorsPieChart = dc.pieChart("#authorGraph")
-    .dimension(byAuthorDimmension).group(byAuthorDimmension.group())
-    .width(400)
-    .height(400)
-    .radius(190)
-    .innerRadius(120)
+      .dimension(byAuthorDimmension).group(byAuthorDimmension.group())
+      .width(400)
+      .height(400)
+      .radius(190)
+      .innerRadius(120)
 
     var yearsPieChart = dc.pieChart("#yearGraph")
-    .dimension(byYearDimmension).group(byYearDimmension.group())
+      .dimension(byYearDimmension).group(byYearDimmension.group())
       .width(180)
       .height(180)
       .radius(80)
       .innerRadius(30)
 
     var monthChart = dc.barChart("#monthGraph")
-    .dimension(byMonthDimmension).group(byMonthDimmension.group())
-    .x(d3.scale.linear().domain(js.Array(1, 12)))
-    .elasticY(true)
-    .width(500)
-    .yAxisLabel(I18n.NumberOfCommits)
-    .xAxisLabel(I18n.Month)
+      .dimension(byMonthDimmension).group(byMonthDimmension.group())
+      .x(d3.scale.linear().domain(js.Array(1, 12)))
+      .elasticY(true)
+      .width(500)
+      .yAxisLabel(I18n.NumberOfCommits)
+      .xAxisLabel(I18n.Month)
 
     var hourChart = dc.barChart("#hourGraph")
-    .dimension(byHourDimension).group(byHourDimension.group())
-    .x(d3.scale.linear().domain(js.Array(0, 24)))
-    .elasticY(true)
-    .width(500)
-    .yAxisLabel(I18n.NumberOfCommits)
-    .xAxisLabel(I18n.HourOfDay)
+      .dimension(byHourDimension).group(byHourDimension.group())
+      .x(d3.scale.linear().domain(js.Array(0, 24)))
+      .elasticY(true)
+      .width(500)
+      .yAxisLabel(I18n.NumberOfCommits)
+      .xAxisLabel(I18n.HourOfDay)
 
 
     var dayOfMonthChart = dc.barChart("#dayOfMonthGraph")
-    .dimension(byDayOfMonthDimension).group(byDayOfMonthDimension.group())
-    .x(d3.scale.linear().domain(js.Array(1, 32)))
-    .elasticY(true)
-    .width(700)
-    .yAxisLabel(I18n.NumberOfCommits)
-    .xAxisLabel(I18n.DayOfMonth)
+      .dimension(byDayOfMonthDimension).group(byDayOfMonthDimension.group())
+      .x(d3.scale.linear().domain(js.Array(1, 32)))
+      .elasticY(true)
+      .width(700)
+      .yAxisLabel(I18n.NumberOfCommits)
+      .xAxisLabel(I18n.DayOfMonth)
 
     var dayOfWeekChart = dc.rowChart("#dayOfWeekGraph")
       .width(180)
@@ -170,24 +174,24 @@ object GitCrossStats {
       .dimension(byDayOfWeekDimension)
       .group(byDayOfWeekDimension.group())
       .label((l: Any) => {
-        l.asInstanceOf[js.Dynamic].key.asInstanceOf[String].drop(2)
-      })
+      l.asInstanceOf[js.Dynamic].key.asInstanceOf[String].drop(2)
+    })
       .elasticX(true).xAxis().ticks(4)
 
     var commitsTable = dc.dataTable("#commits")
-    .dimension(byDateDimension)
-    .sortBy((d: Any) => d.asInstanceOf[CommitEntry].date.getTime())
-    .group((a: Any) => {
-      a.asInstanceOf[CommitEntry].date.toLocaleDateString()
+      .dimension(byDateDimension)
+      .sortBy((d: Any) => d.asInstanceOf[CommitExtended].date.getTime())
+      .group((a: Any) => {
+      a.asInstanceOf[CommitExtended].date.toLocaleDateString()
     })
-    .size(100)
-    .columns(
-      js.Array(
-        (rowinfo: Any) => rowinfo.asInstanceOf[CommitEntry].date.toLocaleTimeString(),
-        (rowinfo: Any) => rowinfo.asInstanceOf[CommitEntry].commit,
-        (rowinfo: Any) => rowinfo.asInstanceOf[CommitEntry].author
+      .size(100)
+      .columns(
+        js.Array(
+          (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].date.toLocaleTimeString(),
+          (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].sha,
+          (rowinfo: Any) => rowinfo.asInstanceOf[CommitExtended].simplifiedAuthor
+        )
       )
-    )
 
     dc.renderAll()
 
