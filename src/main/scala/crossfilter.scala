@@ -91,7 +91,7 @@ trait Dimension[T, TDimension] extends js.Object {
 
 }
 
-package object crossfilter extends js.GlobalScope {
+package object CrossFilter extends js.GlobalScope {
   @JSName("crossfilter")
   var crossfilter: CrossFilter.CrossFilterStatic = js.native
 }

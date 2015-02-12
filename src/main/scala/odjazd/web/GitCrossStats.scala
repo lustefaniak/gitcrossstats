@@ -9,6 +9,7 @@ import scala.scalajs.js.annotation.JSExport
 
 import D3._
 import DC._
+import CrossFilter._
 
 trait GitLogEntry extends js.Any {
   val commit: String
@@ -102,7 +103,7 @@ object GitCrossStats {
 
   def setupData(): Unit = {
 
-    val ndx = crossfilter.crossfilter(processedGitLog)
+    val ndx = crossfilter(processedGitLog)
     val all = ndx.groupAll()
 
     val byCommitDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.commit})
