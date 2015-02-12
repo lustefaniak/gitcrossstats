@@ -1,12 +1,10 @@
 package pl.relationsystems
 
-import pl.relationsystems.dc._
-
 import scala.scalajs.js
 import js.annotation._
 
 
-package dc {
+package DC {
 
 trait IGetSet[T, V] extends js.Object {
   def apply(): T = js.native
@@ -92,18 +90,6 @@ trait IAbstractBubblechart[T] extends js.Object {
   var radiusValueAccessor: IGetSet[js.Function1[js.Any, Double], T] = js.native
 }
 
-trait columnFunction extends js.Object {
-  def apply(rowinfo: js.Any): String = js.native
-}
-
-trait sortbyFunction extends js.Object {
-  def apply(rowinfo: js.Any): js.Dynamic = js.native
-}
-
-trait orderFunction extends js.Object {
-  def apply[T](a: T, b: T): Double = js.native
-}
-
 trait IBubblechart extends IBaseChart[IBubblechart] with IAbstractColorChart[IBubblechart] with IAbstractBubblechart[IBubblechart] with IAbstractCoordinateGridChart[IBubblechart] with IMarginable[IBubblechart] with IListener[IBubblechart] {
 }
 
@@ -122,9 +108,9 @@ trait ILinechart extends IBaseChart[ILinechart] with IAbstractStackableChart[ILi
 
 trait IDatachart extends IBaseChart[IDatachart] with IAbstractStackableChart[IDatachart] with IAbstractCoordinateGridChart[IDatachart] with IMarginable[IDatachart] with IListener[IDatachart] {
   var size: IGetSet[Double, IDatachart] = js.native
-  var columns: IGetSet[js.Array[columnFunction], IDatachart] = js.native
-  var sortBy: IGetSet[sortbyFunction, IDatachart] = js.native
-  var order: IGetSet[orderFunction, IDatachart] = js.native
+  var columns: IGetSet[js.Array[js.Function1[js.Any, String]], IDatachart] = js.native
+  var sortBy: IGetSet[js.Function1[js.Any, Any], IDatachart] = js.native
+  var order: IGetSet[js.Function2[Double, Double, Double], IDatachart] = js.native
 }
 
 trait IRowchart extends IBaseChart[IRowchart] with IAbstractColorChart[IRowchart] with IAbstractStackableChart[IRowchart] with IAbstractCoordinateGridChart[IRowchart] with IMarginable[IRowchart] with IListener[IRowchart] {
@@ -133,20 +119,28 @@ trait IRowchart extends IBaseChart[IRowchart] with IAbstractColorChart[IRowchart
 trait IChartGroup extends js.Object {
 }
 
-}
 
 @JSName("dc")
-object DC extends js.Object {
+object dc extends js.Object {
   var events: IEvents = js.native
+
   def filterAll(chartGroup: IChartGroup = ???): Unit = js.native
+
   def renderAll(chartGroup: IChartGroup = ???): Unit = js.native
+
   def redrawAll(chartGroup: IChartGroup = ???): Unit = js.native
+
   def bubbleChart(cssSel: String): IBubblechart = js.native
+
   def pieChart(cssSel: String): IPiechart = js.native
+
   def barChart(cssSel: String): IBarchart = js.native
+
   def lineChart(cssSel: String): ILinechart = js.native
+
   def dataTable(cssSel: String): IDatachart = js.native
+
   def rowChart(cssSel: String): IRowchart = js.native
 }
 
-
+}

@@ -3,52 +3,140 @@ package pl.relationsystems
 
 import org.scalajs.dom._
 
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js._
 import scala.scalajs.js.annotation.JSExport
-import scala.util.{Random, Failure, Success}
 
-import d3._
+import D3._
+import DC._
+
+trait GitLogEntry extends js.Any {
+  val commit: String
+  val author: String
+  val date: String
+  val message: String
+}
+
+trait GitChangeInformation {
+  val insertions: String
+  val deletions: String
+  val path: String
+}
+
+case class GitLogForDisplay(commit: String, author: String, date: js.Date, year: Int, month: Int, insertions: Int, deletions: Int, changedPaths: Int)
 
 @JSExport("GitCrossStats")
 object GitCrossStats {
 
+  var gitLog = js.Array[GitLogEntry]()
+
+  var commitInformation = js.Dictionary[js.Array[GitChangeInformation]]()
+
+  var processedGitLog: js.Array[GitLogForDisplay] = _
+
+
   @JSExport
   def main(args: Seq[String] = Seq()): Unit = {
-
     console.log("Starting GitCrossStats")
-    type Data = (Int, Double)
 
-    val data = new js.Array[Data]()
-    for (i <- 1 to 100) data.push((i - 1, Random.nextInt(4)+1))
-
-    val ndx = crossfilter.crossfilter[Data](data.sortBy(_._1))
-
-    val indexDimension = ndx.dimension({ (d: Data) => d._1})
-    val frequencyDimension = ndx.dimension({ (d: Data) => d._2})
-
-    val valueGroup = indexDimension.group().reduceSum({
-      (pair: Data) => pair._2
+    d3.json("log.json", { (a: js.Any, b: js.Any) => {
+      console.log("log.json loaded")
+      gitLog = b.asInstanceOf[js.Array[GitLogEntry]]
+      checkIfDataComplete
+    }
     })
 
-    val frequencyGroup = frequencyDimension.group()
-
-
-    val chart = DC.barChart("#test");
-    chart
-      .width(768)
-      .height(480)
-      .x(d3.d3.scale.linear().domain(js.Array(-1, 11)))
-      //.brushOn(false)
-      .dimension(indexDimension)
-      .group(valueGroup)
-
-    val piechart = DC.pieChart("#test2")
-    piechart.dimension(frequencyDimension).group(frequencyGroup)
-
-
-    DC.renderAll()
+    d3.json("stats.json", { (a: js.Any, b: js.Any) => {
+      console.log("stats.json loaded")
+      commitInformation = b.asInstanceOf[js.Dictionary[js.Array[GitChangeInformation]]]
+      checkIfDataComplete
+    }
+    })
 
   }
+
+  def checkIfDataComplete: Unit = {
+    if (gitLog.isEmpty || commitInformation.isEmpty) {
+      console.log("Still waiting for all data")
+    } else {
+      console.log("Data complete")
+      preprocessData()
+    }
+  }
+
+  def preprocessData(): Unit = {
+
+    processedGitLog = gitLog.map {
+      entry =>
+        console.log(entry)
+        val insertions = 0
+        val deletions = 0
+        val changedPaths = 0
+        val author = cleanupAuthor(entry.author)
+        val date = new Date(entry.date)
+
+        val year = date.getFullYear()
+        val month = date.getUTCMonth() + 1
+
+        val result = new GitLogForDisplay(entry.commit, author, date, year, month, insertions, deletions, changedPaths)
+        result
+    }
+
+    //FIXME: do it async, as it takes already very long time
+
+    setupData()
+
+  }
+
+  val authorRegexp = """(.*?)<([^>]+)>""".r
+
+  def cleanupAuthor(gitAuthor: String): String = {
+    gitAuthor match {
+      case authorRegexp(name, email, _*) =>
+        email.substring(0, email.lastIndexOf('@'))
+      case _ => gitAuthor
+    }
+  }
+
+  def setupData(): Unit = {
+
+    val ndx = crossfilter.crossfilter(processedGitLog)
+    val all = ndx.groupAll()
+
+    val byCommitDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.commit})
+    val byYearDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.year})
+    val byMonthDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.month})
+    val byAuthorDimmension = ndx.dimension({ (log: GitLogForDisplay) => log.author})
+    val byDateDimension = ndx.dimension({ (log: GitLogForDisplay) => log.date.getTime()})
+
+
+    var authorsPieChart = dc.pieChart("#authorGraph")
+    authorsPieChart.dimension(byAuthorDimmension).group(byAuthorDimmension.group())
+
+    var yearsPieChart = dc.pieChart("#yearGraph")
+    yearsPieChart.dimension(byYearDimmension).group(byYearDimmension.group())
+
+    var monthChart = dc.barChart("#monthGraph")
+    monthChart.dimension(byMonthDimmension).group(byMonthDimmension.group())
+    monthChart.x(d3.scale.linear().domain(js.Array(1, 12)))
+    monthChart.elasticY(true)
+
+    var commitsTable = dc.dataTable("#commits")
+    commitsTable.dimension(byDateDimension)
+    commitsTable.group((a: Any) => "List of commits")
+    commitsTable.size(100)
+    commitsTable.columns(
+      js.Array(
+        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].commit,
+        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].author,
+        (rowinfo: Any) => rowinfo.asInstanceOf[GitLogForDisplay].date.toUTCString()
+      )
+    )
+    commitsTable.sortBy({ (d: Any) => println(d); d.asInstanceOf[GitLogForDisplay].date.getTime()})
+    commitsTable.order(d3.ascending _)
+
+    dc.renderAll()
+
+  }
+
 }

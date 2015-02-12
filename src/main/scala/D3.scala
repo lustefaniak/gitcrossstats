@@ -529,6 +529,7 @@ trait Time extends js.Object {
 
 trait Range extends js.Object {
   def apply(start: Date, end: Date, step: Double = ???): js.Array[Date] = js.native
+  def apply(): js.Array[Date] = js.native
 }
 
 trait Interval extends js.Object {
@@ -1377,7 +1378,7 @@ trait ScaleBase extends js.Object {
 trait GenericScale[S] extends js.Object {
   def apply(value: js.Any): js.Dynamic = js.native
 
-  def domain(values: js.Array[js.Any]): S = js.native
+  def domain(values: js.Array[_ <: js.Any]): S = js.native
 
   def domain(): js.Array[js.Any] = js.native
 
@@ -1874,7 +1875,7 @@ trait Hull extends js.Object {
 
 }
 
-package object d3 extends js.GlobalScope {
+package object D3 extends js.GlobalScope {
   @JSName("d3")
   var d3: D3.Base = js.native
 }
