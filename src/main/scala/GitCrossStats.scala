@@ -135,7 +135,7 @@ object GitCrossStats {
     val totalWidthAvailable = 1170
 
     val numberOfTicksInTopFilters = 3
-    val topFiltersHeight = 100
+    val topFiltersHeight = 140
 
 
     val monthChart = dc.barChart("#monthGraph")
@@ -173,7 +173,7 @@ object GitCrossStats {
       .width(authorsSize).height(authorsSize)
       .dimension(byAuthorDimmension).group(byAuthorDimmension.group())
       .radius(radius)
-      .innerRadius(radius * 0.8)
+      .innerRadius(radius * 0.4)
 
 
     val rightThirdWidth = 370
@@ -191,7 +191,6 @@ object GitCrossStats {
       .width(rightThirdWidth).height(rightThirdWidth)
       .dimension(byYearDimmension).group(byYearDimmension.group())
       .radius(rightThirdWidth / 2 * 0.95)
-      .innerRadius(rightThirdWidth / 2 * 0.95 * 0.2)
 
 
     val commitsTable = dc.dataTable("#commits")
