@@ -10,9 +10,50 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 </head>
 <body>
-<a href="https://github.com/lustefaniak/gitcrossstats"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+<a href="https://github.com/lustefaniak/gitcrossstats"><img style="position: absolute; top: 0; right: 0; border: 0;"
+                                                            src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+                                                            alt="Fork me on GitHub"
+                                                            data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+
 <div class="container">
     <h1 class="page-header">GitCrossStats</h1>
+
+    <p>This is tiny GitStats clone written in Scala by Lukas Stefaniak to learn <a href="http://www.scala-js.org/">Scala.js</a>
+    </p>
+
+    <h2>
+        <a id="user-content-how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span
+                class="octicon octicon-link"></span></a>How to use</h2>
+
+    <p>It uses dc-js, crossfilter, d3 and bootstrap on the frontend.</p>
+
+    <p>To use it, generate your own <code>data/log.json</code> file using <code>/bin/git-log2json.sh</code> script. Just
+        go to the directory of your
+        git repository checkout and redirect output of the script to file: <code>bin/git-log2json.sh &gt;
+            data/log.json</code></p>
+
+    <p>You can also point it to commits endpoint of <a href="https://github.com/hulu/restfulgit">restfulgit</a>.</p>
+
+    <p>Format of the commit log used should be also compatible with Gihub API, but I didn't check that.</p>
+
+    <h2>
+        <a id="user-content-fork-and-code" class="anchor" href="#fork-and-code" aria-hidden="true"><span
+                class="octicon octicon-link"></span></a>Fork and code</h2>
+
+    <p>If you want to play with some code just launch <code>sbt</code> in main directory.</p>
+
+    <ul class="task-list">
+        <li>In interactive shell type <code>~fastOptJS</code>, see the scala.js magic happen.</li>
+        <li>After a while you should get file <code>gitcrossstats/target/scala-2.11/gitcrossstats-fastopt.js</code>
+        </li>
+        <li>Point your browser to
+            <a href="http://localhost:12345/target/scala-2.11/classes/index-dev.html">http://localhost:12345/target/scala-2.11/classes/index-dev.html</a>
+        </li>
+        <li>Do some changes in the code</li>
+        <li>Enjoy auto refresh on every successfull compile</li>
+    </ul>
+
+    <h2>Example:</h2>
 
     <div class="row">
         <div id="monthGraph" class="col-md-12 chart"><span class='reset' style='display: none;'>Current filter: <span
