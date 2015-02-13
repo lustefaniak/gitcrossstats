@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GitCrossStats - see git stats in many dimensions</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dc/1.7.3/dc.css"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 class="page-header">GitCrossStats</h1>
+
+    <div class="row">
+        <div id="monthGraph" class="col-md-12 chart"><span class='reset' style='display: none;'>Current filter: <span
+                class='filter'></span></span></div>
+    </div>
+    <div class="row">
+        <div id="dayOfMonthGraph" class="col-md-12 chart"><span class='reset'
+                                                                style='display: none;'>Current filter: <span
+                class='filter'></span></span></div>
+    </div>
+    <div class="row">
+        <div id="hourGraph" class="col-md-12 chart"><span class='reset' style='display: none;'>Current filter: <span
+                class='filter'></span></span></div>
+    </div>
+    <div class="row">
+        <div id="authorGraph" class="col-md-8 chart"><span class='reset' style='display: none;'>Current filter: <span
+                class='filter'></span></span></div>
+
+        <div class="col-md-4">
+
+            <div class="row">
+                <div id="dayOfWeekGraph" class="col-md-4 chart"><span class='reset' style='display: none;'>Current filter: <span
+                        class='filter'></span></span></div>
+            </div>
+
+            <div class="row">
+                <div id="yearGraph" class="col-md-4 chart"><span class='reset'
+                                                                 style='display: none;'>Current filter: <span
+                        class='filter'></span></span></div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <h3>Commits</h3>
+
+        <div class="table-responsive">
+            <table id="commits" class="table table-striped">
+            </table>
+        </div>
+    </div>
+</div>
+<!--
+<script type="text/javascript" src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+-->
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.11/crossfilter.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/dc/1.7.3/dc.js"></script>
+
+<script type="text/javascript" src="js/gitcrossstats-opt.js"></script>
+<script>
+    GitCrossStats().main("data/log.json");
+</script>
+</body>
+</html>
