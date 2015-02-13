@@ -2,6 +2,10 @@
 
 This is tiny GitStats clone written in Scala by Lukas Stefaniak to learn [Scala.js](http://www.scala-js.org/)
 
+## Example
+
+Is deployed on github pages: [HERE](http://lustefaniak.github.io/gitcrossstats/)
+
 ## How to use
 
 It uses dc-js, crossfilter, d3 and bootstrap on the frontend.
